@@ -2,6 +2,7 @@ import tensorflow as tf
 from My_Data.TF_Reader import TF_Reader
 from My_Data.Data_Argument import *
 from My_Trainer import Trainer
+from My_Trainer.Trainer_utils import *
 from Attention_Model import Attention_Model
 from tensorflow.python.platform import flags
 import common_flags
@@ -14,41 +15,6 @@ import numpy as np
 
 common_flags.define()
 Flages = flags.FLAGS
-
-def single_accuracy(net_predict,net_lable):
-    single_acc = tf.cast(tf.equal(tf.argmax(net_predict, -1), tf.argmax(net_lable, -1)), tf.float32)
-    single_acc = tf.reduce_mean(single_acc)
-    return single_acc
-
-def seq_accuracy(net_predict,net_lable):
-    seq_acc = tf.cast(tf.equal(tf.argmax(net_predict, -1), tf.argmax(net_lable, -1)), tf.float32)
-    seq_acc = tf.reduce_sum(seq_acc, -1)
-    seq_acc = tf.cast(tf.equal(seq_acc, Flages.label_length), tf.float32)
-    seq_acc = tf.reduce_mean(seq_acc)
-    return seq_acc
-
-def get_loss(pred_res,net_label):
-    with tf.variable_scope('sequence_loss'):
-        labels_list = tf.unstack(label_smoothing_regularization(net_label), axis=1)
-        batch_size, seq_length, _ = net_label.shape.as_list()
-        weights = tf.ones((batch_size, seq_length), dtype=tf.float32)
-        logits_list = tf.unstack(pred_res, axis=1)
-        weights_list = tf.unstack(weights, axis=1)
-        loss = tf.contrib.legacy_seq2seq.sequence_loss(
-            logits_list,
-            labels_list,
-            weights_list,
-            softmax_loss_function=tf.nn.softmax_cross_entropy_with_logits,
-            average_across_timesteps=False  # !!!!!
-        )
-        regularizer_loss = tf.losses.get_regularization_loss()
-        return loss + regularizer_loss
-def label_smoothing_regularization(chars_labels, weight=0.1):
-        # print type(FLAGS.num_char_classes)
-        # print FLAGS.num_char_classes
-        pos_weight = 1.0 - weight
-        neg_weight = weight / Flages.number_of_class
-        return chars_labels * pos_weight + neg_weight
 
 arg_ops = [
     base_norm,
@@ -83,9 +49,8 @@ val_model = Attention_Model(val_images)
 val_model.is_training = False
 val_model.build_model("Attention_Model",True)
 val_model_pred_res = val_model.pred_res
-
-train_loss = get_loss(train_model_pred_res,train_labels)
-val_loss = get_loss(val_model_pred_res,val_labels)
+train_loss = train_model.get_loss(train_labels)
+val_loss = val_model.get_loss(val_labels)
 
 train_single_acc = single_accuracy(train_model_pred_res,train_labels)
 train_seq_acc = seq_accuracy(train_model_pred_res,train_labels)

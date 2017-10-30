@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/My_NN.iml" filepath="$PROJECT_DIR$/.idea/My_NN.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../attention_nn/.idea/attention_nn.iml" filepath="$PROJECT_DIR$/../attention_nn/.idea/attention_nn.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../my_attention_nn/.idea/my_attention_nn.iml" filepath="$PROJECT_DIR$/../my_attention_nn/.idea/my_attention_nn.iml" />
+    </modules>
+  </component>
+</project>

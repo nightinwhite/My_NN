@@ -4,6 +4,7 @@ from tensorflow.python.platform import flags
 import tensorflow.contrib.slim as slim
 from tensorflow.contrib.layers.python.layers import regularizers
 from tensorflow.contrib import layers
+from tensorflow.python.framework import ops
 class SIP_Conv2d():
     def __init__(self):
         self.num_outputs = None
@@ -76,7 +77,7 @@ class SIP_Batch_Norm():
         self.default_config = {
             "decay": 0.9997,
             "epsilon": 0.01,
-            "updates_collections": None,
+            "updates_collections": ops.GraphKeys.UPDATE_OPS,
         }
 
     def set_default(self,decay = None, epsilon = None, updates_collections = None,is_training = None):

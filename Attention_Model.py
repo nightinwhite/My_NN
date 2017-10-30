@@ -80,11 +80,12 @@ class Attention_Model(object):
             self.cnn_saver = tf.train.Saver(self.cnn_variable_list)
             print_info("Done.")
             print_info("building Attention_Decoder...")
-            lstm_cell = tf.contrib.rnn.LSTMCell(self.num_lstm_units,
-                                                use_peepholes=False,
-                                                cell_clip=self.cell_clip,
-                                                state_is_tuple=True,
-                                                initializer=orthogonal_initializer)
+            with tf.variable_scope("lism_cell"):
+                lstm_cell = tf.contrib.rnn.LSTMCell(self.num_lstm_units,
+                                                    use_peepholes=False,
+                                                    cell_clip=self.cell_clip,
+                                                    state_is_tuple=True,
+                                                    initializer=orthogonal_initializer)
             # softmax varibales
             with tf.variable_scope("softmax_layer"):
                 softmax_regularizer = regularizers.l2_regularizer(self.Flags.weight_decay)
@@ -114,34 +115,42 @@ class Attention_Model(object):
             self.get_variables()
 
     def get_char_logits(self,input,index):
-        if index not in self.char_logits:
-            self.char_logits[index] = tf.nn.xw_plus_b(input, self.softmax_w,self.softmax_b)
-        return self.char_logits[index]
+        with tf.variable_scope("get_char_logits"):
+            if index not in self.char_logits:
+                self.char_logits[index] = tf.nn.xw_plus_b(input, self.softmax_w, self.softmax_b)
+            return self.char_logits[index]
 
     def char_one_hot(self, logit):
-        prediction = tf.argmax(logit, axis=1)
-        return tf.one_hot(prediction, self.num_char_classes)
+        with tf.variable_scope("char_one_hot"):
+            prediction = tf.argmax(logit, axis=1)
+            return tf.one_hot(prediction, self.num_char_classes)
 
     def label_smoothing_regularization(self,chars_labels, weight=0.1):
-        # print type(FLAGS.num_char_classes)
-        # print FLAGS.num_char_classes
-        pos_weight = 1.0 - weight
-        neg_weight = weight / self.num_char_classes
-        return chars_labels * pos_weight + neg_weight
+        with tf.variable_scope("label_smoothing_regularization"):
+            # print type(FLAGS.num_char_classes)
+            # print FLAGS.num_char_classes
+            pos_weight = 1.0 - weight
+            neg_weight = weight / self.num_char_classes
+            return chars_labels * pos_weight + neg_weight
 
     def get_input(self,prev,i):
-        if i ==0 :
-            return self.zero_label
-        else:
-            if self.net_label is None:
-                this_label = self.char_one_hot(self.get_char_logits(prev,i - 1))
+        with tf.variable_scope("get_input"):
+            if i == 0:
+                return self.zero_label
             else:
-                this_label = self.net_label[:,i-1,:]
-            return this_label
+                if self.net_label is None:
+                    this_label = self.char_one_hot(self.get_char_logits(prev, i - 1))
+                else:
+                    this_label = self.net_label[:, i - 1, :]
+                return this_label
 
     def get_loss(self,net_label):
         with tf.variable_scope('sequence_loss'):
-            labels_list = tf.unstack(self.label_smoothing_regularization(net_label),axis=1)
+            if self.is_training:
+                labels_list = tf.unstack(self.label_smoothing_regularization(net_label),axis=1)
+            else:
+                labels_list = tf.unstack(net_label, axis=1)
+
             batch_size, seq_length, _ = net_label.shape.as_list()
             weights = tf.ones((batch_size, seq_length), dtype=tf.float32)
                 # # Suppose that reject character is the last in the charset.

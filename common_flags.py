@@ -13,7 +13,7 @@ def define():
     flags.DEFINE_integer("num_views", 1, "图片的角度数量")
 
     flags.DEFINE_float("weight_decay", 0.00004, "规则化系数")
-    flags.DEFINE_float("Conv_W_init_stddev", 0.01, "初始化系数")
+    flags.DEFINE_float("Conv_W_init_stddev", 0.1, "初始化系数")
     flags.DEFINE_float("depth_multiplier", 1.0, "CNN网络深度扩增系数")
     flags.DEFINE_integer("min_depth", 16, "CNN网络最小深度")
     flags.DEFINE_string("final_point","Mixed_p8_c","Inception_v3的深度")
