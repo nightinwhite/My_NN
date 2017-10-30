@@ -48,23 +48,11 @@ class Trainer(object):
             self.optimizer = tf.train.AdamOptimizer(self.learning_rate)
 
 
-    def set_train_info_ops(self,ops_list):
-        self.train_info_ops_list = ops_list
-        self.train_key_iter_num = []
-        for ops in self.train_info_ops_list:
-            self.train_key_iter_num.append(ops.iter_num)
+    def add_train_info_ops(self,ops):
+        self.train_info_ops_list.append(ops)
 
-    def set_val_info_ops(self,ops_list):
-        self.val_info_ops_list = ops_list
-        self.val_key_iter_num = []
-        for ops in self.val_info_ops_list:
-            self.val_key_iter_num.append(ops.iter_num)
-
-    def set_visual_info_ops(self,ops_list):
-        self.visual_info_ops_list = ops_list
-        self.visual_key_iter_num = []
-        for ops in self.visual_info_ops_list:
-            self.visual_key_iter_num.append(ops.iter_num)
+    def add_val_info_ops(self,ops):
+        self.val_info_ops_list.append(ops)
 
     def add_visual_info(self,info_name):
         self.save_info_dict[info_name] = []

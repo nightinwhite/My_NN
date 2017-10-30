@@ -119,20 +119,19 @@ my_trainer = Trainer.Trainer(sess = sess,
                              )
 my_trainer.set_clip_value(Flages.clip_gradient_norm)
 
-train_info_ops = [
-    Trainer.Info_Ops(train_single_acc,"train_single_acc",1),
-    Trainer.Info_Ops(train_seq_acc,"train_seq_acc",1),
-]
-my_trainer.set_train_info_ops(train_info_ops)
+my_trainer.add_train_info_ops(
+    Trainer.Info_Ops(train_single_acc,"train_single_acc",1))
+my_trainer.add_train_info_ops(
+    Trainer.Info_Ops(train_seq_acc, "train_seq_acc", 1))
 
-val_info_ops = [
-    Trainer.Info_Ops(val_loss,"val_loss",1),
-    Trainer.Info_Ops(val_single_acc,"val_single_acc",1),
-    Trainer.Info_Ops(val_seq_acc, "val_seq_acc",1),
-]
-my_trainer.set_val_info_ops(val_info_ops)
+my_trainer.add_val_info_ops(
+    Trainer.Info_Ops(val_loss, "val_loss", 1))
+my_trainer.add_val_info_ops(
+    Trainer.Info_Ops(val_single_acc, "val_single_acc", 1))
+my_trainer.add_val_info_ops(
+    Trainer.Info_Ops(val_seq_acc, "val_seq_acc", 1))
 
-my_trainer.set_save_info("models/","attention_model_chinese1_with_cap2")
+my_trainer.set_save_tf_info("models/","attention_model_chinese1_with_cap2")
 
 def cmp_value(bef_value, now_value):
     if bef_value < now_value:
