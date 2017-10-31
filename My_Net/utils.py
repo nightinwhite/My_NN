@@ -73,12 +73,11 @@ def linear(args,
   # Now the computation.
   scope = vs.get_variable_scope()
   with vs.variable_scope(scope) as outer_scope:
-    linear_regularizer = regularizers.l2_regularizer(Flags.weight_decay)
+    # linear_regularizer = regularizers.l2_regularizer(Flags.weight_decay)
     weights = vs.get_variable(
         _WEIGHTS_VARIABLE_NAME, [total_arg_size, output_size],
         dtype=dtype,
-        initializer=kernel_initializer,
-        regularizer=linear_regularizer)
+        initializer=kernel_initializer,)
     if len(args) == 1:
       res = math_ops.matmul(args[0], weights)
     else:
@@ -92,6 +91,5 @@ def linear(args,
       biases = vs.get_variable(
           _BIAS_VARIABLE_NAME, [output_size],
           dtype=dtype,
-          initializer=bias_initializer,
-          regularizer=linear_regularizer)
+          initializer=bias_initializer,)
     return nn_ops.bias_add(res, biases)

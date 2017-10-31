@@ -80,7 +80,7 @@ class Attention_Model(object):
             self.cnn_saver = tf.train.Saver(self.cnn_variable_list)
             print_info("Done.")
             print_info("building Attention_Decoder...")
-            with tf.variable_scope("lism_cell"):
+            with tf.variable_scope("LSTM_Cell"):
                 lstm_cell = tf.contrib.rnn.LSTMCell(self.num_lstm_units,
                                                     use_peepholes=False,
                                                     cell_clip=self.cell_clip,
@@ -108,7 +108,7 @@ class Attention_Model(object):
             res_outputs,res_states = attention_decoder.ops(net,is_training=self.is_training)
             self.attns = attention_decoder.attns
             print_info("Done")
-            self.saver = tf.train.Saver(inception.train_variables + attention_decoder.train_variables)
+            self.saver = tf.train.Saver()
             self.net_res = res_outputs
             self.pred_res = [tf.expand_dims(self.get_char_logits(res_outputs[i],i),dim=1) for i in xrange(self.seq_length)]
             self.pred_res = tf.concat(self.pred_res,1)
